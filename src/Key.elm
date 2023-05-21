@@ -1010,6 +1010,6 @@ toString key =
             "0"
 
 
-isInWord : String -> Key -> Bool
-isInWord word key =
-    isLetter key && String.contains (toString key) (String.toUpper word)
+isInString : String -> Key -> Bool
+isInString string key =
+    not (isSpecial key) && String.contains (toString key) (String.toUpper string)

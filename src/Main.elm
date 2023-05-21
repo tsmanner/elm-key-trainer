@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html)
+import Html.Attributes
 import Html.Events
 import Key exposing (Key)
 import Layout exposing (Layout)
@@ -12,7 +13,7 @@ import Svg.Attributes
 
 type alias Model =
     { filter : Key -> Bool
-    , word : Maybe String
+    , string : Maybe String
     }
 
 
@@ -24,12 +25,13 @@ type Msg
     | Numbers
     | Specials
     | Punctuation
-    | Word String
+    | StringUpdate String
+    | StringFilter
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { filter = \_ -> True, word = Nothing }, Cmd.none )
+    ( { filter = \_ -> True, string = Nothing }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -56,8 +58,20 @@ update msg model =
         Punctuation ->
             ( { model | filter = Key.isPunctuation }, Cmd.none )
 
-        Word word ->
-            ( { model | filter = Key.isInWord word, word = Just word }, Cmd.none )
+        StringUpdate string ->
+            if String.isEmpty string then
+                ( { model | string = Nothing }, Cmd.none )
+
+            else
+                ( { model | string = Just string }, Cmd.none )
+
+        StringFilter ->
+            case model.string of
+                Nothing ->
+                    ( { model | filter = \_ -> True }, Cmd.none )
+
+                Just string ->
+                    ( { model | filter = Key.isInString string }, Cmd.none )
 
 
 key_width =
@@ -165,14 +179,25 @@ view model =
                 ]
                 info.keys
             ]
-        , Html.button [ Html.Events.onClick All ] [ Html.text "Show All" ]
-        , Html.button [ Html.Events.onClick Letters ] [ Html.text "Letters" ]
-        , Html.button [ Html.Events.onClick Vowels ] [ Html.text "Vowels" ]
-        , Html.button [ Html.Events.onClick Consonants ] [ Html.text "Consonants" ]
-        , Html.button [ Html.Events.onClick Numbers ] [ Html.text "Numbers" ]
-        , Html.button [ Html.Events.onClick Specials ] [ Html.text "Specials" ]
-        , Html.button [ Html.Events.onClick Punctuation ] [ Html.text "Punctuation" ]
-        , Html.button [ Html.Events.onClick (Word "RazzleDazzle") ] [ Html.text "Word" ]
+        , Html.div []
+            [ Html.button [ Html.Events.onClick All ] [ Html.text "Show All" ]
+            , Html.button [ Html.Events.onClick Letters ] [ Html.text "Letters" ]
+            , Html.button [ Html.Events.onClick Vowels ] [ Html.text "Vowels" ]
+            , Html.button [ Html.Events.onClick Consonants ] [ Html.text "Consonants" ]
+            , Html.button [ Html.Events.onClick Numbers ] [ Html.text "Numbers" ]
+            , Html.button [ Html.Events.onClick Specials ] [ Html.text "Specials" ]
+            , Html.button [ Html.Events.onClick Punctuation ] [ Html.text "Punctuation" ]
+            ]
+        , Html.div []
+            [ Html.button [ Html.Events.onClick StringFilter ] [ Html.text "Input" ]
+            , Html.input
+                [ Html.Attributes.placeholder "Type a string to filter the keys!"
+                , Html.Attributes.value (Maybe.withDefault "" model.string)
+                , Html.Events.onInput StringUpdate
+                , Html.Events.onSubmit StringFilter
+                ]
+                []
+            ]
         ]
 
 
