@@ -1,6 +1,7 @@
 on: [push]
 jobs:
   Build-Elm-Page:
+    runs-on: ubuntu-latest
     steps:
     - uses: jorelali/setup-elm@v5
       with:
