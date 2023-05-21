@@ -38,7 +38,7 @@ jobs:
         with:
           elm-version: 0.19.1
       - name: Generate Elm HTML
-        run: elm make src/Main.elm --output=page/index.html
+        run: elm make --optimize --output=page/index.html src/Main.elm
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
