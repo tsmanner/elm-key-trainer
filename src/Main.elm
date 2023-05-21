@@ -78,6 +78,7 @@ update msg model =
         StringKeyUp key_num ->
             if key_num == 13 then
                 update StringFilter model
+
             else
                 ( model, Cmd.none )
 
@@ -101,9 +102,12 @@ type alias RenderInfo =
     }
 
 
+
 -- A custom event handlers for the keyup and keydown events. They decode
 -- the incoming event data and send the key code with the message to the
 -- update function.
+
+
 onKeyUp : (Int -> msg) -> Html.Attribute msg
 onKeyUp tagger =
     Html.Events.on "keyup" (Json.map tagger Html.Events.keyCode)
