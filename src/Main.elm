@@ -2,7 +2,6 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html)
-import Html.Attributes
 import Html.Events
 import Key exposing (Key)
 import Layout exposing (Layout)
