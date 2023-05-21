@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html)
+import Html.Attributes
 import Html.Events
 import Key exposing (Key)
 import Layout exposing (Layout)
@@ -88,25 +89,26 @@ renderKey key render_info width =
                 , Svg.Attributes.y (String.fromInt render_info.y)
                 , Svg.Attributes.width (String.fromInt width)
                 , Svg.Attributes.height (String.fromInt key_height)
-                , Svg.Attributes.fill "darkgreen"
+                , Svg.Attributes.fill "#2F2F2F"
                 , Svg.Attributes.stroke "white"
                 ]
                 []
+
         key_text =
             Svg.text_
                 [ Svg.Attributes.x (String.fromInt (render_info.x + 5))
                 , Svg.Attributes.y (String.fromInt (render_info.y + 30))
                 , Svg.Attributes.fontSize (String.fromInt 13)
-                , Svg.Attributes.fill "black"
+                , Svg.Attributes.fill "white"
                 , Svg.Attributes.textAnchor "top"
                 ]
                 [ Svg.text (Key.toString key) ]
     in
-    if (render_info.renderText key) then
+    if render_info.renderText key then
         [ key_rect, key_text ]
+
     else
         [ key_rect ]
-
 
 
 keyRect : Key -> RenderInfo -> RenderInfo
@@ -116,9 +118,9 @@ keyRect key render_info =
             round (key_width * render_info.layout.widthFactor key)
     in
     { render_info
-    | keys = (renderKey key render_info width) ++ render_info.keys
-    , x = render_info.x + width
-    , x_max = max render_info.x_max (render_info.x + width)
+        | keys = renderKey key render_info width ++ render_info.keys
+        , x = render_info.x + width
+        , x_max = max render_info.x_max (render_info.x + width)
     }
 
 
@@ -127,9 +129,9 @@ keyRows row_keys render_info =
     List.foldl
         keyRect
         { render_info
-        | x = 0
-        , y = render_info.y + key_height
-        , y_max = render_info.y_max + key_height
+            | x = 0
+            , y = render_info.y + key_height
+            , y_max = render_info.y_max + key_height
         }
         row_keys
 
@@ -152,7 +154,8 @@ renderLayout filter layout =
 view : Model -> Html Msg
 view model =
     let
-        info = renderLayout model.filter Layout.lenovo
+        info =
+            renderLayout model.filter Layout.lenovo
     in
     Html.div []
         [ Html.div []
