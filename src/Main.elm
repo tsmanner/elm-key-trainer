@@ -4,6 +4,7 @@ import Browser
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Json.Decode as Json
 import Key exposing (Key)
 import Layout exposing (Layout)
 import Platform.Cmd as Cmd
@@ -27,6 +28,7 @@ type Msg
     | Punctuation
     | StringUpdate String
     | StringFilter
+    | StringKeyUp Int
 
 
 init : () -> ( Model, Cmd Msg )
@@ -73,6 +75,12 @@ update msg model =
                 Just string ->
                     ( { model | filter = Key.isInString string }, Cmd.none )
 
+        StringKeyUp key_num ->
+            if key_num == 13 then
+                update StringFilter model
+            else
+                ( model, Cmd.none )
+
 
 key_width =
     50
@@ -91,6 +99,19 @@ type alias RenderInfo =
     , y_max : Int
     , renderText : Key -> Bool
     }
+
+
+-- A custom event handlers for the keyup and keydown events. They decode
+-- the incoming event data and send the key code with the message to the
+-- update function.
+onKeyUp : (Int -> msg) -> Html.Attribute msg
+onKeyUp tagger =
+    Html.Events.on "keyup" (Json.map tagger Html.Events.keyCode)
+
+
+onKeyDown : (Int -> msg) -> Html.Attribute msg
+onKeyDown tagger =
+    Html.Events.on "keydown" (Json.map tagger Html.Events.keyCode)
 
 
 renderKey : Key -> RenderInfo -> Int -> List (Svg Msg)
@@ -194,7 +215,7 @@ view model =
                 [ Html.Attributes.placeholder "Type a string to filter the keys!"
                 , Html.Attributes.value (Maybe.withDefault "" model.string)
                 , Html.Events.onInput StringUpdate
-                , Html.Events.onSubmit StringFilter
+                , onKeyUp StringKeyUp
                 ]
                 []
             ]
