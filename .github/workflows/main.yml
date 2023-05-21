@@ -6,4 +6,5 @@ jobs:
     - uses: jorelali/setup-elm@v5
       with:
         elm-version: 0.19.1
+    - run: cd ${{ github.workspace }}
     - run: elm make ${{ github.workspace }}/src/Main.elm
